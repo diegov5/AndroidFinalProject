@@ -20,13 +20,17 @@ import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.protocol.client.Subscription;
 import com.spotify.protocol.types.PlayerState;
 import com.spotify.protocol.types.Track;
+import com.spotify.sdk.android.authentication.AuthenticationResponse;
+
+import java.util.Objects;
 
 public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
     private static final String CLIENT_ID = "e9fa5421cee0490f8c1a636504ceccc8";
-    private static final String REDIRECT_URI = "http://com.example.androidfinalproject/callback";
+    private static final String REDIRECT_URI = "androidfinalproject://callback";
     private SpotifyAppRemote mSpotifyAppRemote;
+    String authToken;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
@@ -38,8 +42,10 @@ public class HomeFragment extends Fragment {
                 textView.setText(s);
             }
         });
+        authToken = Objects.requireNonNull(getActivity()).getIntent().getStringExtra("response");
         return root;
     }
+
 
     @Override
     public void onStart() {
@@ -53,7 +59,7 @@ public class HomeFragment extends Fragment {
                         .build();
 
         Log.d("MainActivity", "here! Yay!");
-        SpotifyAppRemote.connect(getActivity(), connectionParams, new Connector.ConnectionListener() {
+        SpotifyAppRemote.connect(getContext(), connectionParams, new Connector.ConnectionListener() {
                     @Override
                     public void onConnected(SpotifyAppRemote spotifyAppRemote) {
 
@@ -76,7 +82,7 @@ public class HomeFragment extends Fragment {
     private void connected() {
         // Then we will write some more code here.
         mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:37i9dQZF1DX2sUQwD7tbmL");
-        /*mSpotifyAppRemote.getPlayerApi()
+        mSpotifyAppRemote.getPlayerApi()
                 .subscribeToPlayerState()
                 .setEventCallback(new Subscription.EventCallback<PlayerState>() {
                     @Override
@@ -88,7 +94,7 @@ public class HomeFragment extends Fragment {
                     }
                 });
 
-         */
+
     }
 
     @Override
