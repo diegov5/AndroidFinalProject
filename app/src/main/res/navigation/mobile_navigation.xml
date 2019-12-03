@@ -9,25 +9,25 @@
         android:id="@+id/nav_home"
         android:name="com.example.androidfinalproject.ui.home.HomeFragment"
         android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_personal" />
 
     <fragment
         android:id="@+id/nav_gallery"
-        android:name="com.example.androidfinalproject.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:name="com.example.androidfinalproject.ui.workout.WorkoutFragment"
+        android:label="@string/menu_workout"
+        tools:layout="@layout/fragment_workout" />
 
     <fragment
         android:id="@+id/nav_slideshow"
-        android:name="com.example.androidfinalproject.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        android:name="com.example.androidfinalproject.ui.sleeping.SleepingFragment"
+        android:label="@string/menu_sleeping"
+        tools:layout="@layout/fragment_sleeping" />
 
     <fragment
         android:id="@+id/nav_tools"
-        android:name="com.example.androidfinalproject.ui.tools.ToolsFragment"
-        android:label="@string/menu_tools"
-        tools:layout="@layout/fragment_tools" />
+        android:name="com.example.androidfinalproject.ui.navigation.NavigationFragment"
+        android:label="@string/menu_navigation"
+        tools:layout="@layout/fragment_navigation" />
 
     <fragment
         android:id="@+id/nav_share"

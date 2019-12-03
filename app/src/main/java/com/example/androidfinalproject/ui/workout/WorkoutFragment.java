@@ -1,4 +1,4 @@
-package com.example.androidfinalproject.ui.home;
+package com.example.androidfinalproject.ui.workout;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -22,9 +22,13 @@ import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.protocol.types.ListItem;
 import com.spotify.protocol.types.Track;
 
-public class HomeFragment extends Fragment implements View.OnClickListener {
+public class WorkoutFragment extends Fragment implements View.OnClickListener {
 
-    private HomeViewModel homeViewModel;
+    private WorkoutViewModel workoutViewModel;
+    SpotifyAppRemote mSpotifyAppRemote;
+    private static final String CLIENT_ID = "e9fa5421cee0490f8c1a636504ceccc8";
+    private static final String REDIRECT_URI = "androidfinalproject://callback";
+    ListItem[] listOfWorkoutRecommendedItems;
     ImageView image1;
     ImageView image2;
     ImageView image3;
@@ -35,15 +39,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     TextView playlistText3;
     TextView playlistText4;
     TextView playlistText5;
-    SpotifyAppRemote mSpotifyAppRemote;
-    private static final String CLIENT_ID = "e9fa5421cee0490f8c1a636504ceccc8";
-    private static final String REDIRECT_URI = "androidfinalproject://callback";
-    ListItem[] listOfRecommendedItems;
 
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_personal, container, false);
-
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
+        workoutViewModel =
+                ViewModelProviders.of(this).get(WorkoutViewModel.class);
+        View root = inflater.inflate(R.layout.fragment_workout, container, false);
         image1 = root.findViewById(R.id.image1);
         image1.setOnClickListener(this);
         image2 = root.findViewById(R.id.image2);
@@ -60,7 +61,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         playlistText3 = root.findViewById(R.id.playlistTitle3);
         playlistText4 = root.findViewById(R.id.playlistTitle4);
         playlistText5 = root.findViewById(R.id.playlistTitle5);
-
         return root;
     }
 
@@ -68,19 +68,19 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.image1:
-                mSpotifyAppRemote.getPlayerApi().play(listOfRecommendedItems[0].uri);
+                mSpotifyAppRemote.getPlayerApi().play(listOfWorkoutRecommendedItems[0].uri);
                 break;
             case R.id.image2:
-                mSpotifyAppRemote.getPlayerApi().play(listOfRecommendedItems[1].uri);
+                mSpotifyAppRemote.getPlayerApi().play(listOfWorkoutRecommendedItems[1].uri);
                 break;
             case R.id.image3:
-                mSpotifyAppRemote.getPlayerApi().play(listOfRecommendedItems[2].uri);
+                mSpotifyAppRemote.getPlayerApi().play(listOfWorkoutRecommendedItems[2].uri);
                 break;
             case R.id.image4:
-                mSpotifyAppRemote.getPlayerApi().play(listOfRecommendedItems[3].uri);
+                mSpotifyAppRemote.getPlayerApi().play(listOfWorkoutRecommendedItems[3].uri);
                 break;
             case R.id.image5:
-                mSpotifyAppRemote.getPlayerApi().play(listOfRecommendedItems[4].uri);
+                mSpotifyAppRemote.getPlayerApi().play(listOfWorkoutRecommendedItems[4].uri);
                 break;
         }
     }
@@ -118,22 +118,19 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private void connected() {
         // Then we will write some more code here.
-        mSpotifyAppRemote.getContentApi().getRecommendedContentItems(ContentApi.ContentType.DEFAULT)
-            .setResultCallback(listItems -> {
-                mSpotifyAppRemote.getContentApi().getChildrenOfItem(listItems.items[1], 7, 0)
-                        .setResultCallback(listItems1 -> {
-                            listOfRecommendedItems = listItems1.items;
-                            Log.d("HomeFragment", "The title for the song is " + listOfRecommendedItems[0]);
-                            ImageView[] listOfImageViews = {image1, image2, image3, image4, image5};
-                            TextView[] listOfTextViews = {playlistText1, playlistText2, playlistText3, playlistText4, playlistText5};
-                            for (int i = 0; i < 5; i ++) {
-                                int finalI = i;
-                                mSpotifyAppRemote.getImagesApi().getImage(listOfRecommendedItems[i].imageUri)
-                                        .setResultCallback(bitmap -> listOfImageViews[finalI].setImageBitmap(bitmap));
-                                listOfTextViews[i].setText(listOfRecommendedItems[i].title);
-                            }
-                        });
-        });
+        mSpotifyAppRemote.getContentApi().getRecommendedContentItems(ContentApi.ContentType.FITNESS)
+                .setResultCallback(listItems -> {
+                    listOfWorkoutRecommendedItems = listItems.items;
+                    Log.d("WorkoutFragment", "The title for the song is " + listOfWorkoutRecommendedItems[0]);
+                    ImageView[] listOfImageViews = {image1, image2, image3, image4, image5};
+                    TextView[] listOfTextViews = {playlistText1, playlistText2, playlistText3, playlistText4, playlistText5};
+                    for (int i = 0; i < 5; i ++) {
+                        int finalI = i;
+                        mSpotifyAppRemote.getImagesApi().getImage(listOfWorkoutRecommendedItems[i+1].imageUri)
+                                .setResultCallback(bitmap -> listOfImageViews[finalI].setImageBitmap(bitmap));
+                        listOfTextViews[i].setText(listOfWorkoutRecommendedItems[i+1].title);
+                    }
+                });
     }
 
 

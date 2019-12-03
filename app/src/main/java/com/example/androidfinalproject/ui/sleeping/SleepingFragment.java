@@ -1,4 +1,4 @@
-package com.example.androidfinalproject.ui.home;
+package com.example.androidfinalproject.ui.sleeping;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -20,11 +20,10 @@ import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.ContentApi;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.protocol.types.ListItem;
-import com.spotify.protocol.types.Track;
 
-public class HomeFragment extends Fragment implements View.OnClickListener {
+public class SleepingFragment extends Fragment implements View.OnClickListener {
 
-    private HomeViewModel homeViewModel;
+    private SleepingViewModel sleepingViewModel;
     ImageView image1;
     ImageView image2;
     ImageView image3;
@@ -40,9 +39,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private static final String REDIRECT_URI = "androidfinalproject://callback";
     ListItem[] listOfRecommendedItems;
 
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_personal, container, false);
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
+        sleepingViewModel =
+                ViewModelProviders.of(this).get(SleepingViewModel.class);
+        View root = inflater.inflate(R.layout.fragment_sleeping, container, false);
 
         image1 = root.findViewById(R.id.image1);
         image1.setOnClickListener(this);
@@ -118,22 +119,22 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private void connected() {
         // Then we will write some more code here.
-        mSpotifyAppRemote.getContentApi().getRecommendedContentItems(ContentApi.ContentType.DEFAULT)
-            .setResultCallback(listItems -> {
-                mSpotifyAppRemote.getContentApi().getChildrenOfItem(listItems.items[1], 7, 0)
-                        .setResultCallback(listItems1 -> {
-                            listOfRecommendedItems = listItems1.items;
-                            Log.d("HomeFragment", "The title for the song is " + listOfRecommendedItems[0]);
-                            ImageView[] listOfImageViews = {image1, image2, image3, image4, image5};
-                            TextView[] listOfTextViews = {playlistText1, playlistText2, playlistText3, playlistText4, playlistText5};
-                            for (int i = 0; i < 5; i ++) {
-                                int finalI = i;
-                                mSpotifyAppRemote.getImagesApi().getImage(listOfRecommendedItems[i].imageUri)
-                                        .setResultCallback(bitmap -> listOfImageViews[finalI].setImageBitmap(bitmap));
-                                listOfTextViews[i].setText(listOfRecommendedItems[i].title);
-                            }
-                        });
-        });
+        mSpotifyAppRemote.getContentApi().getRecommendedContentItems(ContentApi.ContentType.SLEEP)
+                .setResultCallback(listItems -> {
+                    mSpotifyAppRemote.getContentApi().getChildrenOfItem(listItems.items[0], 7, 0)
+                            .setResultCallback(listItems1 -> {
+                                listOfRecommendedItems = listItems1.items;
+                                Log.d("HomeFragment", "The title for the song is " + listOfRecommendedItems[0]);
+                                ImageView[] listOfImageViews = {image1, image2, image3, image4, image5};
+                                TextView[] listOfTextViews = {playlistText1, playlistText2, playlistText3, playlistText4, playlistText5};
+                                for (int i = 0; i < 5; i ++) {
+                                    int finalI = i;
+                                    mSpotifyAppRemote.getImagesApi().getImage(listOfRecommendedItems[i].imageUri)
+                                            .setResultCallback(bitmap -> listOfImageViews[finalI].setImageBitmap(bitmap));
+                                    listOfTextViews[i].setText(listOfRecommendedItems[i].title);
+                                }
+                            });
+                });
     }
 
 

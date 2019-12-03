@@ -38,7 +38,9 @@ import com.spotify.protocol.types.Track;
 import com.spotify.protocol.types.Uri;
 import com.squareup.picasso.Picasso;
 
+import java.io.Serializable;
 import java.net.URI;
+
 
 
 public class MainActivity extends AppCompatActivity {
@@ -47,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     final static String TAG = "MainActivity";
     private static final String CLIENT_ID = "e9fa5421cee0490f8c1a636504ceccc8";
     private static final String REDIRECT_URI = "androidfinalproject://callback";
-    private SpotifyAppRemote mSpotifyAppRemote;
+    SpotifyAppRemote mSpotifyAppRemote;
     ImageView naviagtionViewImage;
     TextView username;
     NavigationView navigationDrawer;
@@ -58,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
-        username = findViewById(R.id.username);
         setSupportActionBar(toolbar);
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -72,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationView navigationView = findViewById(R.id.nav_view);
         View hview = navigationView.getHeaderView(0);
         naviagtionViewImage = hview.findViewById(R.id.navigationViewImage);
+        username = hview.findViewById(R.id.username);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
@@ -79,7 +81,10 @@ public class MainActivity extends AppCompatActivity {
                 R.id.nav_tools, R.id.nav_share, R.id.nav_send)
                 .setDrawerLayout(drawer)
                 .build();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("spotifyAppRemote", (Serializable) mSpotifyAppRemote);
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        navController.setGraph(navController.getGraph(), bundle);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
     }
@@ -94,8 +99,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onSupportNavigateUp() {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        return NavigationUI.navigateUp(navController, mAppBarConfiguration)
-                || super.onSupportNavigateUp();
+        return NavigationUI.navigateUp(navController, mAppBarConfiguration) || super.onSupportNavigateUp();
     }
 
     @Override
@@ -104,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "in On New Intent");
     }
 
-    @Override
     public void onStart() {
         super.onStart();
         SpotifyAppRemote.disconnect(mSpotifyAppRemote);
@@ -138,22 +141,23 @@ public class MainActivity extends AppCompatActivity {
 
     private void connected() {
         // Then we will write some more code here.
-        mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:37i9dQZF1DX2sUQwD7tbmL");
+        //mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:37i9dQZF1DX2sUQwD7tbmL");
         mSpotifyAppRemote.getPlayerApi()
                 .subscribeToPlayerState()
                 .setEventCallback(playerState -> {
                     final Track track = playerState.track;
                     if (track != null) {
                         Log.d("MainActivity", track.name + " by " + track.artist.name);
+                        String nowPlaying = track.name + " by " + track.artist.name;
+                        username.setText(nowPlaying);
                     }
                     //PlayerContext currentContext = new PlayerContext();
                     Log.d(TAG, "Context URI:" + track.imageUri);
-                    //username.setText(mSpotifyAppRemote.getUserApi().toString());
                     mSpotifyAppRemote.getImagesApi().getImage(track.imageUri)
                             .setResultCallback(bitmap -> naviagtionViewImage.setImageBitmap(bitmap));
                     //Picasso.get().load().into(naviagtionViewImage);
                 });
-        
+
     }
 
 
