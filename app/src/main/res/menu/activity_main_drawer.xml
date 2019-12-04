@@ -4,24 +4,32 @@
     tools:showIn="navigation_view">
 
     <group android:checkableBehavior="single">
+        <!-- Music icon icon by https://icons8.com Icons -->
         <item
             android:id="@+id/nav_home"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/icons8_music_24"
             android:title="@string/menu_home" />
+
+        <!-- Strength icon icon by https://icons8.com Icons -->
         <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
+            android:id="@+id/nav_workout"
+            android:icon="@drawable/icons8_strength_24"
             android:title="@string/menu_workout" />
+
+        <!-- Sleeping icon icon by https://icons8.com Icons -->
         <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:id="@+id/nav_sleeping"
+            android:icon="@drawable/icons8_sleep_26"
             android:title="@string/menu_sleeping" />
+
+        <!-- Driving icon icon by https://icons8.com Icons -->
         <item
-            android:id="@+id/nav_tools"
-            android:icon="@drawable/ic_menu_manage"
+            android:id="@+id/nav_driving"
+            android:icon="@drawable/icons8_driving_24"
             android:title="@string/menu_navigation" />
     </group>
 
+    <!--
     <item android:title="Communicate">
         <menu>
             <item
@@ -34,5 +42,6 @@
                 android:title="@string/menu_send" />
         </menu>
     </item>
+    -->
 
 </menu>

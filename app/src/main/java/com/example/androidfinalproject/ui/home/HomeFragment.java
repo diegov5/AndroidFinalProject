@@ -1,3 +1,21 @@
+/*
+ * This program uses the Spotify Android SDK to show recommended playlists based on a users listening habits and shows
+ *      contextualized playlists
+ *
+ * CPSC 312-01, Fall 2019
+ *
+ * @authors Diego Valdez
+ *          Patrick Seminatore
+ *
+ * References
+ *  https://developer.spotify.com/documentation/android/quick-start/
+ *  https://github.com/spotify/android-sdk
+ *  https://developer.spotify.com/documentation/android/quick-start/#authorizing-user-with-single-sign-on-library
+ *  https://developer.spotify.com/documentation/general/guides/content-linking-guide/
+ *
+ * @version v1.0
+ */
+
 package com.example.androidfinalproject.ui.home;
 
 import android.os.Bundle;
@@ -25,17 +43,17 @@ import com.spotify.protocol.types.Track;
 public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private HomeViewModel homeViewModel;
-    ImageView image1;
-    ImageView image2;
-    ImageView image3;
-    ImageView image4;
-    ImageView image5;
-    TextView playlistText1;
-    TextView playlistText2;
-    TextView playlistText3;
-    TextView playlistText4;
-    TextView playlistText5;
-    SpotifyAppRemote mSpotifyAppRemote;
+    private ImageView image1;
+    private ImageView image2;
+    private ImageView image3;
+    private ImageView image4;
+    private ImageView image5;
+    private TextView playlistText1;
+    private TextView playlistText2;
+    private TextView playlistText3;
+    private TextView playlistText4;
+    private TextView playlistText5;
+    private SpotifyAppRemote mSpotifyAppRemote;
     private static final String CLIENT_ID = "e9fa5421cee0490f8c1a636504ceccc8";
     private static final String REDIRECT_URI = "androidfinalproject://callback";
     ListItem[] listOfRecommendedItems;
@@ -85,6 +103,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    /*  https://developer.spotify.com/documentation/android/quick-start/
+     *
+     *
+     */
     public void onStart() {
         super.onStart();
         SpotifyAppRemote.disconnect(mSpotifyAppRemote);
@@ -116,6 +138,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         });
     }
 
+    /*  https://developer.spotify.com/documentation/android/quick-start/
+     *
+     *
+     */
     private void connected() {
         // Then we will write some more code here.
         mSpotifyAppRemote.getContentApi().getRecommendedContentItems(ContentApi.ContentType.DEFAULT)

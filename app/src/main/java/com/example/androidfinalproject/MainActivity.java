@@ -1,14 +1,32 @@
+/*
+ * This program uses the Spotify Android SDK to show recommended playlists based on a users listening habits and shows
+ *      contextualized playlists
+ *
+ * CPSC 312-01, Fall 2019
+ *
+ * @authors Diego Valdez
+ *          Patrick Seminatore
+ *
+ * References
+ *  https://developer.spotify.com/documentation/android/quick-start/
+ *  https://github.com/spotify/android-sdk
+ *  https://developer.spotify.com/documentation/android/quick-start/#authorizing-user-with-single-sign-on-library
+ *  https://developer.spotify.com/documentation/general/guides/content-linking-guide/
+ *
+ * @version v1.0
+ */
+
 package com.example.androidfinalproject;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.navigation.NavController;
@@ -29,18 +47,10 @@ import android.widget.TextView;
 
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
-import com.spotify.android.appremote.api.ImagesApi;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
-
-import com.spotify.protocol.client.CallResult;
-import com.spotify.protocol.types.ImageUri;
-import com.spotify.protocol.types.PlayerContext;
 import com.spotify.protocol.types.Track;
-import com.spotify.protocol.types.Uri;
-import com.squareup.picasso.Picasso;
 
 import java.io.Serializable;
-import java.net.URI;
 
 
 
@@ -72,8 +82,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow,
-                R.id.nav_tools, R.id.nav_share, R.id.nav_send)
+                R.id.nav_home, R.id.nav_workout, R.id.nav_sleeping,
+                R.id.nav_driving)
                 .setDrawerLayout(drawer)
                 .build();
         Bundle bundle = new Bundle();
@@ -92,6 +102,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.action_share:
+                mSpotifyAppRemote.getPlayerApi()
+                        .subscribeToPlayerState()
+                        .setEventCallback(playerState -> {
+                            final Track track = playerState.track;
+                            Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                            sharingIntent.setType("text/plain");
+                            sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, track.name);
+                            String spotifyLink = track.uri;
+                            spotifyLink = spotifyLink.replaceAll(":", "/");
+                            spotifyLink = spotifyLink.replaceAll("spotify", "");
+                            spotifyLink = "Hey! Check out this song shared from Recommendify, a Spotify third party app \n \n" + "open.spotify.com" + spotifyLink;
+                            sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, spotifyLink);
+                            startActivity(Intent.createChooser(sharingIntent, "Share current track using"));
+                        });
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
     public boolean onSupportNavigateUp() {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration) || super.onSupportNavigateUp();
@@ -103,6 +138,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.d(TAG, "in On New Intent");
     }
 
+    /*  https://developer.spotify.com/documentation/android/quick-start/
+    *
+    *
+     */
     public void onStart() {
         super.onStart();
         SpotifyAppRemote.disconnect(mSpotifyAppRemote);
@@ -130,10 +169,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.e("MainActivity", throwable.getMessage(), throwable);
                 Log.e("MainActivity", "Connection failed, error above ^");
                 // Something went wrong when attempting to connect! Handle errors here
+                final String appPackageName = "com.spotify.music";
+                final String referrer = "adjust_campaign=PACKAGE_NAME&adjust_tracker=ndjczk&utm_source=adjust_preinstall";
+
+                try {
+                    Uri uri = Uri.parse("market://details")
+                            .buildUpon()
+                            .appendQueryParameter("id", appPackageName)
+                            .appendQueryParameter("referrer", referrer)
+                            .build();
+                    startActivity(new Intent(Intent.ACTION_VIEW, uri));
+                } catch (android.content.ActivityNotFoundException ignored) {
+                    Uri uri = Uri.parse("https://play.google.com/store/apps/details")
+                            .buildUpon()
+                            .appendQueryParameter("id", appPackageName)
+                            .appendQueryParameter("referrer", referrer)
+                            .build();
+                    startActivity(new Intent(Intent.ACTION_VIEW, uri));
+                }
+
             }
         });
     }
 
+    /*  https://developer.spotify.com/documentation/android/quick-start/
+     *
+     *
+     */
     private void connected() {
         // Then we will write some more code here.
         //mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:37i9dQZF1DX2sUQwD7tbmL");
@@ -146,11 +208,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         String nowPlaying = track.name + " by " + track.artist.name;
                         username.setText(nowPlaying);
                     }
-                    //PlayerContext currentContext = new PlayerContext();
                     Log.d(TAG, "Context URI:" + track.imageUri);
                     mSpotifyAppRemote.getImagesApi().getImage(track.imageUri)
                             .setResultCallback(bitmap -> naviagtionViewImage.setImageBitmap(bitmap));
-                    //Picasso.get().load().into(naviagtionViewImage);
                 });
 
     }
@@ -162,6 +222,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         SpotifyAppRemote.disconnect(mSpotifyAppRemote);
     }
 
+
+    /* https://developer.spotify.com/documentation/general/guides/content-linking-guide/
+     *
+     *
+     *
+     */
     @Override
     public void onClick(View v) {
         PackageManager pm = getPackageManager();

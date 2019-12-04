@@ -12,19 +12,19 @@
         tools:layout="@layout/fragment_personal" />
 
     <fragment
-        android:id="@+id/nav_gallery"
+        android:id="@+id/nav_workout"
         android:name="com.example.androidfinalproject.ui.workout.WorkoutFragment"
         android:label="@string/menu_workout"
         tools:layout="@layout/fragment_workout" />
 
     <fragment
-        android:id="@+id/nav_slideshow"
+        android:id="@+id/nav_sleeping"
         android:name="com.example.androidfinalproject.ui.sleeping.SleepingFragment"
         android:label="@string/menu_sleeping"
         tools:layout="@layout/fragment_sleeping" />
 
     <fragment
-        android:id="@+id/nav_tools"
+        android:id="@+id/nav_driving"
         android:name="com.example.androidfinalproject.ui.navigation.NavigationFragment"
         android:label="@string/menu_navigation"
         tools:layout="@layout/fragment_navigation" />
