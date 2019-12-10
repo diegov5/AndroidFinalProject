@@ -44,7 +44,7 @@ public class WorkoutFragment extends Fragment implements View.OnClickListener {
     private WorkoutViewModel workoutViewModel;
     private static final String CLIENT_ID = "e9fa5421cee0490f8c1a636504ceccc8";
     private static final String REDIRECT_URI = "androidfinalproject://callback";
-    ListItem[] listOfWorkoutRecommendedItems;
+    private ListItem[] listOfWorkoutRecommendedItems;
     private ImageView image1;
     private ImageView image2;
     private ImageView image3;
@@ -57,6 +57,11 @@ public class WorkoutFragment extends Fragment implements View.OnClickListener {
     private TextView playlistText5;
     private SpotifyAppRemote mSpotifyAppRemote;
 
+    /*
+     * Method responsible for inflating the fragment and initiating all of the widgets in
+     *  the layout
+     *
+     */
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         workoutViewModel =
@@ -81,6 +86,9 @@ public class WorkoutFragment extends Fragment implements View.OnClickListener {
         return root;
     }
 
+    /*
+     * Method responsible for playing the playlist that got clicked in the layout
+     */
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -103,8 +111,8 @@ public class WorkoutFragment extends Fragment implements View.OnClickListener {
     }
 
     /*  https://developer.spotify.com/documentation/android/quick-start/
-     *
-     *
+     *   Handles the connection from this application to the Spotify service
+     *   If successful, it calls the connected method, if not, calls the failure method
      */
     public void onStart() {
         super.onStart();
@@ -138,7 +146,7 @@ public class WorkoutFragment extends Fragment implements View.OnClickListener {
     }
 
     /*  https://developer.spotify.com/documentation/android/quick-start/
-     *
+     *  Method is invoked once the app is successfully connected to spotify and performs an action
      *
      */
     private void connected() {
@@ -159,8 +167,8 @@ public class WorkoutFragment extends Fragment implements View.OnClickListener {
     }
 
 
-    /*  https://developer.spotify.com/documentation/android/quick-start/
-     *
+    /*
+     *   This method disconnects from Spotify once the app is closed
      *
      */
     public void onStop() {

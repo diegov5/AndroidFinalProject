@@ -56,6 +56,11 @@ public class SleepingFragment extends Fragment implements View.OnClickListener {
     private static final String REDIRECT_URI = "androidfinalproject://callback";
     ListItem[] listOfRecommendedItems;
 
+    /*
+     * Method responsible for inflating the fragment and initiating all of the widgets in
+     *  the layout
+     *
+     */
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         sleepingViewModel =
@@ -82,6 +87,9 @@ public class SleepingFragment extends Fragment implements View.OnClickListener {
         return root;
     }
 
+    /*
+     * Method responsible for playing the playlist that got clicked in the layout
+     */
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -104,8 +112,8 @@ public class SleepingFragment extends Fragment implements View.OnClickListener {
     }
 
     /*  https://developer.spotify.com/documentation/android/quick-start/
-     *
-     *
+     *   Handles the connection from this application to the Spotify service
+     *   If successful, it calls the connected method, if not, calls the failure method
      */
     public void onStart() {
         super.onStart();
@@ -139,7 +147,7 @@ public class SleepingFragment extends Fragment implements View.OnClickListener {
     }
 
     /*  https://developer.spotify.com/documentation/android/quick-start/
-     *
+     *  Method is invoked once the app is successfully connected to spotify and performs an action
      *
      */
     private void connected() {
@@ -163,8 +171,8 @@ public class SleepingFragment extends Fragment implements View.OnClickListener {
     }
 
 
-    /*  https://developer.spotify.com/documentation/android/quick-start/
-     *
+    /*
+     *   This method disconnects from Spotify once the app is closed
      *
      */
     public void onStop() {

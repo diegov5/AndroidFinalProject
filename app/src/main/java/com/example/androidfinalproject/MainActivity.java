@@ -63,9 +63,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     SpotifyAppRemote mSpotifyAppRemote;
     ImageView naviagtionViewImage;
     TextView username;
-    NavigationView navigationDrawer;
 
 
+    /*
+     *   This method handles creating main navigation activity that hosts the fragment
+     *
+     *   Parameters: savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,6 +98,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         NavigationUI.setupWithNavController(navigationView, navController);
     }
 
+    /*
+     *   This method inflating the options menu
+     *
+     *   Parameters: menu, the menu to be inflated
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -101,31 +110,38 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return true;
     }
 
+    /*
+     *   This method handles the on click event for the action bar buttons
+     *
+     *   Parameters: item, the option that is selected from the menu
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.action_share:
-                mSpotifyAppRemote.getPlayerApi()
-                        .subscribeToPlayerState()
-                        .setEventCallback(playerState -> {
-                            final Track track = playerState.track;
-                            Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
-                            sharingIntent.setType("text/plain");
-                            sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, track.name);
-                            String spotifyLink = track.uri;
-                            spotifyLink = spotifyLink.replaceAll(":", "/");
-                            spotifyLink = spotifyLink.replaceAll("spotify", "");
-                            spotifyLink = "Hey! Check out this song shared from Recommendify, a Spotify third party app \n \n" + "open.spotify.com" + spotifyLink;
-                            sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, spotifyLink);
-                            startActivity(Intent.createChooser(sharingIntent, "Share current track using"));
-                        });
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.action_share) {
+            mSpotifyAppRemote.getPlayerApi()
+                    .subscribeToPlayerState()
+                    .setEventCallback(playerState -> {
+                        final Track track = playerState.track;
+                        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+                        sharingIntent.setType("text/plain");
+                        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, track.name);
+                        String spotifyLink = track.uri;
+                        spotifyLink = spotifyLink.replaceAll(":", "/");
+                        spotifyLink = spotifyLink.replaceAll("spotify", "");
+                        spotifyLink = "Hey! Check out this song shared from Recommendify, a Spotify third party app \n \n" + "open.spotify.com" + spotifyLink;
+                        sharingIntent.putExtra(Intent.EXTRA_TEXT, spotifyLink);
+                        startActivity(Intent.createChooser(sharingIntent, "Share current track using"));
+                    });
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
+    /*
+     *   This method handles closing the navigation drawer
+     *
+     */
     @Override
     public boolean onSupportNavigateUp() {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -139,8 +155,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     /*  https://developer.spotify.com/documentation/android/quick-start/
-    *
-    *
+    *   Handles the connection from this application to the Spotify service
+    *   If successful, it calls the connected method, if not, calls the failure method
      */
     public void onStart() {
         super.onStart();
@@ -193,7 +209,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     /*  https://developer.spotify.com/documentation/android/quick-start/
-     *
+     *  Method is invoked once the app is successfully connected to spotify and performs an action
      *
      */
     private void connected() {
@@ -207,15 +223,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         Log.d("MainActivity", track.name + " by " + track.artist.name);
                         String nowPlaying = track.name + " by " + track.artist.name;
                         username.setText(nowPlaying);
+                        mSpotifyAppRemote.getImagesApi().getImage(track.imageUri)
+                                .setResultCallback(bitmap -> naviagtionViewImage.setImageBitmap(bitmap));
                     }
-                    Log.d(TAG, "Context URI:" + track.imageUri);
-                    mSpotifyAppRemote.getImagesApi().getImage(track.imageUri)
-                            .setResultCallback(bitmap -> naviagtionViewImage.setImageBitmap(bitmap));
                 });
 
     }
 
 
+    /*
+     *   This method disconnects from Spotify once the app is closed
+     *
+     */
     public void onStop() {
         super.onStop();
         // Aaand we will finish off here.
@@ -225,8 +244,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     /* https://developer.spotify.com/documentation/general/guides/content-linking-guide/
      *
-     *
-     *
+     *  Handles the floating action button click, that opens the currently playing song in the actual spotify app
+     *      This feature is required per the Spotify for developers Terms of Service
      */
     @Override
     public void onClick(View v) {
